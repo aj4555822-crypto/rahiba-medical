@@ -3,225 +3,337 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>قريباً</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@200;400;600;800;900&display=swap" rel="stylesheet">
+    <title>قريباً | المنظومة الصحية الرقمية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@200;400;600;800;900&family=Tajawal:wght@300;500;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- GSAP Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <style>
+        :root {
+            --bg: #050b09;
+            --gold: #C4962C;
+            --gold-light: #f5d57a;
+            --green: #0E7C5F;
+            --green-dark: #052e22;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Noto Kufi Arabic', sans-serif;
+            font-family: 'Tajawal', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(ellipse at top, #0a2e22 0%, #051a14 60%, #020806 100%);
+            background: var(--bg);
             overflow: hidden;
             position: relative;
-            padding: 20px;
+            perspective: 1000px;
         }
 
-        /* نجوم متلألئة في الخلفية */
-        .stars {
+        /* خلفية داكنة مع وهج */
+        .bg-glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(14, 124, 95, 0.15) 0%, transparent 60%);
+            z-index: 0;
+        }
+
+        /* الجسيمات المتحركة */
+        .particles {
             position: absolute;
             inset: 0;
-            background-image:
-                radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.8), transparent),
-                radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.6), transparent),
-                radial-gradient(1.5px 1.5px at 70% 20%, rgba(255,255,255,0.7), transparent),
-                radial-gradient(1px 1px at 85% 50%, rgba(255,255,255,0.5), transparent),
-                radial-gradient(2px 2px at 15% 80%, rgba(255,255,255,0.7), transparent),
-                radial-gradient(1px 1px at 60% 90%, rgba(255,255,255,0.5), transparent),
-                radial-gradient(1.5px 1.5px at 90% 10%, rgba(255,255,255,0.6), transparent),
-                radial-gradient(1px 1px at 30% 50%, rgba(255,255,255,0.4), transparent);
-            background-size: 100% 100%;
-            animation: twinkle 4s ease-in-out infinite alternate;
+            z-index: 1;
+            pointer-events: none;
         }
-        @keyframes twinkle {
-            from { opacity: 0.4; }
-            to { opacity: 1; }
+        .particle {
+            position: absolute;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0.3;
         }
 
-        /* اللوحة الإعلانية */
+        /* حاوية اللوحة الإعلانية */
+        .scene {
+            z-index: 10;
+            transform-style: preserve-3d;
+        }
+
         .billboard {
             position: relative;
-            background: linear-gradient(145deg, #0e3a2c 0%, #061f17 100%);
-            border-radius: 24px;
-            padding: 80px 50px;
-            box-shadow:
-                0 30px 80px rgba(0,0,0,0.7),
-                0 0 0 2px rgba(196,150,44,0.15),
-                inset 0 0 0 1px rgba(255,255,255,0.05);
-            max-width: 720px;
-            width: 100%;
+            background: linear-gradient(145deg, rgba(14, 58, 44, 0.4) 0%, rgba(5, 11, 9, 0.8) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(196, 150, 44, 0.2);
+            border-radius: 30px;
+            padding: 80px 60px;
+            box-shadow: 
+                0 30px 80px rgba(0,0,0,0.8),
+                inset 0 0 50px rgba(0,0,0,0.5);
+            max-width: 800px;
+            width: 90%;
             text-align: center;
-            z-index: 2;
             overflow: hidden;
+            transform-style: preserve-3d;
         }
 
-        /* إطار معدني للوحة */
-        .billboard::before {
-            content: '';
+        /* خط النبض (EKG) المتحرك */
+        .ekg-container {
             position: absolute;
-            inset: 8px;
-            border: 1px solid rgba(196,150,44,0.25);
-            border-radius: 18px;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            transform: translateY(-50%);
+            opacity: 0.1;
+            z-index: 0;
             pointer-events: none;
         }
-
-        /* وهج ذهبي خفيف */
-        .billboard::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(196,150,44,0.08) 0%, transparent 40%);
-            animation: glow 6s ease-in-out infinite alternate;
-            pointer-events: none;
-        }
-        @keyframes glow {
-            from { transform: translate(-10%, -10%) rotate(0deg); }
-            to { transform: translate(10%, 10%) rotate(180deg); }
+        .ekg-line {
+            width: 100%;
+            height: 150px;
+            fill: none;
+            stroke: var(--gold);
+            stroke-width: 2;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
         }
 
-        /* الأعمدة الجانبية */
-        .pillars {
-            position: absolute;
-            bottom: -100px;
-            left: 50px;
-            width: 30px;
-            height: 120px;
-            background: linear-gradient(to right, #1a1a1a, #3a3a3a, #1a1a1a);
-            border-radius: 0 0 8px 8px;
-            z-index: 1;
-        }
-        .pillars.right { left: auto; right: 50px; }
+        .content { position: relative; z-index: 2; }
 
-        /* المحتوى */
-        .content { position: relative; z-index: 3; }
-
+        /* الأيقونة */
         .icon-wrap {
-            width: 90px;
-            height: 90px;
-            margin: 0 auto 30px;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 40px;
             border-radius: 50%;
-            background: linear-gradient(145deg, rgba(196,150,44,0.2), rgba(196,150,44,0.05));
-            border: 1px solid rgba(196,150,44,0.4);
+            background: radial-gradient(circle, rgba(196, 150, 44, 0.2), transparent 70%);
+            border: 1px solid rgba(196, 150, 44, 0.4);
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            animation: pulse 2.5s ease-in-out infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(196,150,44,0.4); }
-            50% { box-shadow: 0 0 0 20px rgba(196,150,44,0); }
+            box-shadow: 0 0 30px rgba(196, 150, 44, 0.2);
         }
         .icon-wrap i {
-            font-size: 2.5rem;
-            color: #C4962C;
-            animation: rotate 8s linear infinite;
-        }
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            font-size: 3rem;
+            color: var(--gold);
+            text-shadow: 0 0 20px var(--gold);
         }
 
+        /* النصوص */
         .label {
             display: inline-block;
-            font-size: 0.85rem;
-            letter-spacing: 4px;
-            color: rgba(196,150,44,0.7);
+            font-family: 'Noto Kufi Arabic', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 6px;
+            color: var(--gold-light);
             margin-bottom: 20px;
-            font-weight: 600;
-            padding: 6px 20px;
-            border: 1px solid rgba(196,150,44,0.3);
+            padding: 8px 24px;
+            border: 1px solid rgba(196, 150, 44, 0.4);
             border-radius: 50px;
-            text-transform: uppercase;
+            background: rgba(196, 150, 44, 0.05);
         }
 
         h1 {
-            font-size: clamp(3rem, 10vw, 6rem);
+            font-family: 'Noto Kufi Arabic', sans-serif;
+            font-size: clamp(4rem, 12vw, 8rem);
             font-weight: 900;
-            color: #fff;
-            line-height: 1.1;
-            margin-bottom: 40px;
-            text-shadow: 0 4px 30px rgba(196,150,44,0.3);
-            background: linear-gradient(180deg, #ffffff 0%, #C4962C 100%);
+            line-height: 1;
+            margin-bottom: 30px;
+            background: linear-gradient(180deg, #ffffff 0%, var(--gold) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
+            filter: drop-shadow(0 4px 20px rgba(196, 150, 44, 0.4));
         }
 
-        /* نقاط تحميل */
-        .loader {
+        .subtitle {
+            font-family: 'Tajawal', sans-serif;
+            font-size: clamp(1.1rem, 3vw, 1.6rem);
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 300;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
             display: flex;
-            gap: 10px;
+            flex-wrap: wrap;
             justify-content: center;
-            margin-top: 40px;
-        }
-        .loader span {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #C4962C;
-            animation: bounce 1.4s ease-in-out infinite;
-        }
-        .loader span:nth-child(2) { animation-delay: 0.2s; }
-        .loader span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
-            40% { transform: scale(1); opacity: 1; }
+            gap: 0.4em;
         }
 
-        /* زخرفة سفلية */
-        .ornament {
+        .word {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .highlight {
+            color: var(--gold-light);
+            font-weight: 800;
+            position: relative;
+        }
+
+        /* مؤشر التحميل */
+        .loader {
+            margin-top: 50px;
             display: flex;
-            align-items: center;
             justify-content: center;
             gap: 12px;
-            margin-top: 30px;
-            opacity: 0.5;
         }
-        .ornament::before, .ornament::after {
-            content: '';
-            width: 50px;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #C4962C, transparent);
-        }
-        .ornament i {
-            color: #C4962C;
-            font-size: 0.8rem;
+        .loader span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 10px var(--gold);
         }
     </style>
 </head>
 <body>
-    <div class="stars"></div>
+    <div class="bg-glow"></div>
+    <div class="particles" id="particles"></div>
 
-    <div class="billboard">
-        <div class="pillars"></div>
-        <div class="pillars right"></div>
-
-        <div class="content">
-            <div class="icon-wrap">
-                <i class="fas fa-heart-pulse"></i>
+    <div class="scene" id="scene">
+        <div class="billboard" id="billboard">
+            <!-- خط النبض -->
+            <div class="ekg-container">
+                <svg class="ekg-line" id="ekgLine" viewBox="0 0 800 150" preserveAspectRatio="none">
+                    <path d="M0,75 L150,75 L180,75 L200,30 L220,120 L240,75 L350,75 L380,75 L400,45 L420,105 L440,75 L550,75 L580,75 L600,20 L620,130 L640,75 L800,75" />
+                </svg>
             </div>
 
-            <span class="label">Coming Soon</span>
+            <div class="content">
+                <div class="icon-wrap">
+                    <i class="fas fa-heart-pulse"></i>
+                </div>
 
-            <h1>قريباً</h1>
+                <div class="label">Coming Soon</div>
 
-            <div class="loader">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+                <h1>قريباً</h1>
 
-            <div class="ornament">
-                <i class="fas fa-star"></i>
+                <div class="subtitle" id="subtitleText">
+                    <span class="word">نحو</span>
+                    <span class="word highlight">منظومة صحية رقمية</span>
+                    <span class="word">متكاملة</span>
+                    <span class="word">لمدينة</span>
+                    <span class="word highlight">الرحيبة</span>
+                </div>
+
+                <div class="loader">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
         </div>
     </div>
+
+    <script>
+        // === 1. توليد الجسيمات في الخلفية ===
+        const particlesContainer = document.getElementById('particles');
+        for(let i=0; i<30; i++) {
+            let p = document.createElement('div');
+            p.classList.add('particle');
+            let size = Math.random() * 4 + 1;
+            p.style.width = size + 'px';
+            p.style.height = size + 'px';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.top = Math.random() * 100 + '%';
+            particlesContainer.appendChild(p);
+            
+            // تحريك الجسيمات بشكل عشوائي
+            gsap.to(p, {
+                y: Math.random() * 200 - 100,
+                x: Math.random() * 200 - 100,
+                opacity: Math.random() * 0.5 + 0.2,
+                duration: Math.random() * 5 + 3,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+        }
+
+        // === 2. تأثير التتبع ثلاثي الأبعاد (3D Tilt) ===
+        const billboard = document.getElementById('billboard');
+        const scene = document.getElementById('scene');
+
+        document.addEventListener('mousemove', (e) => {
+            let xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+            let yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+            
+            gsap.to(scene, {
+                rotationY: -xAxis, // عكس المحور للغة العربية RTL
+                rotationX: yAxis,
+                duration: 1,
+                ease: "power2.out"
+            });
+        });
+
+        // === 3. الجدول الزمني الأسطوري (GSAP Timeline) ===
+        const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+        tl.from(billboard, {
+                scale: 0.8,
+                opacity: 0,
+                duration: 1.5,
+                filter: "blur(15px)"
+            })
+            .from('.icon-wrap', {
+                scale: 0,
+                opacity: 0,
+                duration: 0.8,
+                ease: "back.out(1.7)"
+            }, "-=0.5")
+            .from('.label', {
+                y: -30,
+                opacity: 0,
+                duration: 0.6
+            }, "-=0.4")
+            .from('h1', {
+                y: 100,
+                opacity: 0,
+                scale: 1.3,
+                filter: "blur(10px)",
+                duration: 1.2,
+                ease: "expo.out"
+            }, "-=0.3")
+            // ظهور الكلمات تباعاً
+            .to('.word', {
+                opacity: 1,
+                y: 0,
+                stagger: 0.15,
+                duration: 0.8
+            }, "-=0.5")
+            // رسم خط النبض
+            .to('#ekgLine', {
+                strokeDashoffset: 0,
+                duration: 2.5,
+                ease: "power1.inOut"
+            }, "-=1")
+            .from('.loader span', {
+                scale: 0,
+                opacity: 0,
+                stagger: 0.2,
+                duration: 0.4
+            }, "-=0.5");
+
+        // === 4. أنيميشن مستمر للايقونة ===
+        gsap.to('.icon-wrap i', {
+            scale: 1.15,
+            duration: 1.2,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut"
+        });
+
+        // أنيميشن مستمر لنقاط التحميل
+        gsap.to('.loader span', {
+            y: -15,
+            opacity: 0.5,
+            stagger: 0.2,
+            duration: 0.6,
+            repeat: -1,
+            yoyo: true,
+            ease: "power2.inOut"
+        });
+    </script>
 </body>
 </html>
